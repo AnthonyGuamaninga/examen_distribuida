@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-books
+  labels:
+    app: app-books
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-books
+  template:
+    metadata:
+      name: app-books
+      labels:
+        app: app-books
+    spec:
+      containers:
+        - name: app-books
+          image: docker.io/aaguamaninga/app-books-examen:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          #          resources:
+          #            requests:
+          #              cpu: "250m"
+          #              memory: "64Mi"
+          env:
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: jdbc:postgresql://dbserver:5432/distribuida
+            #              value: jdbc:postgresql://aaguamaninga-pgserver.postgres.database.azure.com:5432/distribuida
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: postgres
+            #              value: distribuida
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: postgres
+            #              value: Azure10.
+            - name: QUARKUS_HTTP_PORT
+              value: "8080"
+            - name: CONSUL_HOST
+              value: "consul"
+            - name: CONSUL_PORT
+              value: "8500"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-books-service
+  labels:
+    app: app-books
+spec:
+  type: LoadBalancer  #Al subir el yaml se pone << LoadBalancer >> para tener una ip REAL
+  selector:
+    app: app-books
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+#---
+#apiVersion: autoscaling/v2
+#kind: HorizontalPodAutoscaler
+#metadata:
+#  name: app-books-hpa
+#spec:
+#  scaleTargetRef:
+#    kind: Deployment
+#    name: app-books
+#  minReplicas: 1
+#  maxReplicas: 10
+#  metrics:
+#    - type: Resource
+#      resource:
+#        name: cpu
+#        target:
+#          type: AverageValue
+#          averageUtilization: 50
+#    - type: Resource
+#      resource:
+#        name: memory
+#        target:
+#          type: Utilization
+#          averageUtilization: 50

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-authors
+  labels:
+    app: app-authors
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-authors
+  template:
+    metadata:
+      name: app-authors
+      labels:
+        app: app-authors
+    spec:
+      containers:
+        - name: app-authors
+          image: docker.io/aaguamaninga/app-authors-examen:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DATASOURCE_JDBC_URL
+              value: jdbc:postgresql://dbserver:5432/distribuida
+            - name: DATASOURCE_USERNAME
+              value: postgres
+            - name: DATASOURCE_PASSWORD
+              value: postgres
+            - name: QUARKUS_HTTP_PORT
+              value: "8080"
+            - name: CONSUL_HOST
+              value: "consul"
+            - name: CONSUL_PORT
+              value: "8500"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-authors-service
+  labels:
+    app: app-authors
+spec:
+  type: ClusterIP
+  selector:
+    app: app-authors
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+#---
+#apiVersion: autoscaling/v2
+#kind: HorizontalPodAutoscaler
+#metadata:
+#  name: app-authors-hpa
+#spec:
+#  scaleTargetRef:
+#    apiVersion: apps/v1
+#    kind: Deployment
+#    name: app-authors
+#  minReplicas: 1
+#  maxReplicas: 10
+#  metrics:
+#    - type: Resource
+#      resource:
+#        name: cpu
+#        target:
+#          type: Utilization
+#          averageUtilization: 50
+#    - type: Resource
+#      resource:
+#        name: memory
+#        target:
+#          type: Utilization
+#          averageUtilization: 50
