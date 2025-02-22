@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: app-books
-          image: docker.io/aaguamaninga/app-books-examen:latest
+          image: docker.io/aaguamaninga/app-books-prueba:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

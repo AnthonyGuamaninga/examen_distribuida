@@ -1,0 +1,127 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: app-vue
+#  labels:
+#    app: app-vue
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: app-vue
+#  template:
+#    metadata:
+#      name: app-vue
+#      labels:
+#        app: app-vue
+#    spec:
+##      volumes:
+##        - name: config-volume
+##          configMap:
+##            name: vue-config
+#      containers:
+#        - name: app-vue
+#          image: docker.io/aaguamaninga/app-front-vue:latest
+#          imagePullPolicy: IfNotPresent
+#          ports:
+#            - containerPort: 80
+#              protocol: TCP
+#          env:
+#            - name: VUE_APP_API_HOST  # Variable de entorno para el host
+#              value: "app-books-service"
+#            - name: VUE_APP_API_PORT  # Variable de entorno para el puerto
+#              value: "8080"
+#            - name: VUE_APP_API_PATH  # Variable de entorno para la ruta
+#              value: "books"
+##          volumeMounts:
+##            - mountPath: /app/public/config.json
+##              subPath: config.json
+##              name: config-volume
+#      restartPolicy: Always
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: app-vue-service
+#  labels:
+#    app: app-vue
+#spec:
+#  type: LoadBalancer  # O NodePort si estás en un entorno local
+#  selector:
+#    app: app-vue
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 80
+#---
+##apiVersion: v1
+##kind: ConfigMap
+##metadata:
+##  name: vue-config
+##data:
+##  config.json: |
+##    {
+##      "HOST": "app-books-service",
+##      "PORT": "8080",
+##      "PATH": "books"
+##    }
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-vue
+  labels:
+    app: app-vue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-vue
+  template:
+    metadata:
+      labels:
+        app: app-vue
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: vue-config
+      containers:
+        - name: app-vue
+          image: docker.io/aaguamaninga/app-front-vue:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/config.json  # Para Nginx
+              subPath: config.json
+              name: config-volume
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-vue-service
+  labels:
+    app: app-vue
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-vue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vue-config
+data:
+  config.json: |
+    {
+      "HOST": "app-books-service",
+      "PORT": "8080",
+      "PATH": "books"
+    }

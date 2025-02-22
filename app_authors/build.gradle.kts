@@ -1,8 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("java")
-//    id("io.helidon.microprofile") version "4.0.0"
-    id("application")
-//    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.freefair.lombok") version "8.11"
 }
 
@@ -16,43 +16,37 @@ repositories {
 var helidonVersion = "4.1.6"
 
 dependencies {
-    implementation("io.helidon.microprofile.bundles:helidon-microprofile")
-    // Helidon BOM (Bill of Materials)
-    implementation(enforcedPlatform("io.helidon:helidon-dependencies:${helidonVersion}"))
-
-    // Helidon Core
+    // Helidon MicroProfile
+    implementation(enforcedPlatform("io.helidon:helidon-dependencies:$helidonVersion"))
     implementation("io.helidon.webserver:helidon-webserver")
+    // Health
+    implementation("io.helidon.webserver.observe:helidon-webserver-observe-health")
     implementation("io.helidon.health:helidon-health-checks")
+    // JSON (Gson)
+    implementation("com.google.code.gson:gson:2.12.1") // Conservar Gson
+    // CDI
+    implementation("org.jboss.weld.se:weld-se-core:6.0.1.Final")
+    implementation("jakarta.enterprise:jakarta.enterprise.cdi-api:4.1.0")
 
-    // JSON-B
-    implementation("jakarta.json.bind:jakarta.json.bind-api")
-    implementation("org.glassfish.jersey.media:jersey-media-json-binding")
+    // JPA
+    implementation("org.hibernate.orm:hibernate-core:6.6.3.Final")
+    // Base de datos (PostgreSQL)
+    implementation("org.postgresql:postgresql:42.7.4")
 
-    // JPA / Hibernate (usando la integración oficial de Helidon)
-    implementation("io.helidon.integrations.cdi:helidon-integrations-cdi-hibernate")
-
-    // CDI y JPA APIs
-    implementation("jakarta.annotation:jakarta.annotation-api")
-    implementation("jakarta.enterprise:jakarta.enterprise.cdi-api")
-    implementation("jakarta.inject:jakarta.inject-api")
-    implementation("jakarta.persistence:jakarta.persistence-api")
-    implementation("jakarta.transaction:jakarta.transaction-api")
-
-    // DeltaSpike Data
-    implementation("org.apache.deltaspike.modules:deltaspike-data-module-api:2.0.0")
-    implementation("org.apache.deltaspike.core:deltaspike-core-api:2.0.0")
-    implementation("org.apache.deltaspike.core:deltaspike-core-impl:2.0.0")
+//    // JDBC
+//    implementation("io.helidon.dbclient:helidon-dbclient")
+//    implementation("io.helidon.dbclient:helidon-dbclient-jdbc")
+//    implementation("com.h2database:h2")
 
     // OpenAPI
     implementation("io.helidon.openapi:helidon-openapi")
-    implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:4.0.2")
-    implementation("org.eclipse.microprofile.config:microprofile-config-api:3.1")
-
-    // Health Check
-    implementation("io.helidon.health:helidon-health")
-
+    implementation("io.helidon.integrations.openapi-ui:helidon-integrations-openapi-ui")
+    implementation("io.smallrye:smallrye-open-api-ui:4.0.8")
     // Flyway
     implementation("org.flywaydb:flyway-core:11.3.3")
+    implementation("org.apache.commons:commons-dbcp2:2.13.0")
+
+
 
 }
 
@@ -62,15 +56,15 @@ sourceSets {
     }
 }
 
-//tasks.jar {
-//    manifest {
-//        attributes(
-//            mapOf("Main-Class" to "com.programacion.distribuida.authors.rest.AuthorRest",
-//                "Class-Path" to configurations.runtimeClasspath
-//                    .get()
-//                    .joinToString(separator = " ") { file ->
-//                        "${file.name}"
-//                    })
-//        )
-//    }
-//}
+tasks.jar {
+    manifest {
+        attributes(
+            mapOf("Main-Class" to "com.programacion.distribuida.authors.PrincipalAuthorsRest",
+                "Class-Path" to configurations.runtimeClasspath
+                    .get()
+                    .joinToString(separator = " ") { file ->
+                        "${file.name}"
+                    })
+        )
+    }
+}

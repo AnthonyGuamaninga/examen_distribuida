@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: Authors API
+  version: 1.0.0
+  description: API para gestionar autores
+paths:
+  /authors:
+    get:
+      summary: Obtener todos los autores
+      description: Devuelve una lista de todos los autores registrados.
+      responses:
+        '200':
+          description: Lista de autores obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+    post:
+      summary: Crear un nuevo autor
+      description: Crea un nuevo autor con los datos proporcionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          description: Autor creado correctamente
+  /authors/{id}:
+    get:
+      summary: Obtener un autor por ID
+      description: Devuelve un autor específico basado en su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Autor obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+    put:
+      summary: Actualizar un autor
+      description: Actualiza un autor existente con los datos proporcionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          description: Autor actualizado correctamente
+    delete:
+      summary: Eliminar un autor
+      description: Elimina un autor existente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          description: Autor eliminado correctamente
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
