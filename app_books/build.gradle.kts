@@ -47,6 +47,10 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-fault-tolerance")
     // openapi
     implementation("io.quarkus:quarkus-smallrye-openapi")
+
+    //Control de versiones DB
+    implementation("io.quarkus:quarkus-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
 }
 
 tasks.withType<JavaCompile> {

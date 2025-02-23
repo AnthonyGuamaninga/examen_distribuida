@@ -1,10 +1,10 @@
-create table authors (
+create table if not exists authors (
                          id serial primary key,
                          first_name varchar(64) not null,
                          last_name varchar(64) not null
 );
 
-create table books(
+create table if not exists books(
                       id serial primary key,
                       isbn varchar(64) not null,
                       title varchar(64) not null,

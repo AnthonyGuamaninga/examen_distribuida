@@ -12,11 +12,19 @@ import io.helidon.webserver.http.ServerRequest;
 import io.helidon.webserver.http.ServerResponse;
 import io.helidon.webserver.observe.ObserveFeature;
 import io.helidon.webserver.observe.health.HealthObserver;
-import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Destroyed;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.se.SeContainer;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
 
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.UUID;
+
+@ApplicationScoped
 public class PrincipalAuthorsRest {
 
     static void handleInsert(ServerRequest req, ServerResponse res) {
@@ -62,9 +70,16 @@ public class PrincipalAuthorsRest {
     }
 
 
+
     public static void main(String[] args) {
-        SeContainer container = SeContainerInitializer.newInstance().initialize();
         Config config = Config.create();
+        Config.global(config);
+
+        SeContainer container = SeContainerInitializer.newInstance().initialize();
+
+//        Server.builder()
+//                .build()
+//                .start();
 
         WebServer.builder()
                 .config(config.get("server"))
@@ -76,7 +91,7 @@ public class PrincipalAuthorsRest {
                         .put("/authors", PrincipalAuthorsRest::handleUpdate)
                         .delete("/authors", PrincipalAuthorsRest::handleDelete)
                 )
-                .port(8080)
+                .port(config.get("helidon.port").asInt().get())
                 .build()
                 .start();
 
